@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import { Link } from 'react-router-dom';
 import logo from '../assets/logos/logo.png';
-
+import logoF from '../assets/logos/logof.png';
 import { useLanguage } from '../context/LanguageContext';
 
 const Login = () => {
@@ -27,7 +27,7 @@ const Login = () => {
       
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
         <Link to="/" className="inline-block">
-          <img src={logo} alt="MoExpress" className="h-10 w-auto mx-auto" />
+          {theme === 'dark' ? <img src={logoF} alt="MoExpress" className="h-10 w-auto mx-auto text-white" /> : <img src={logo} alt="MoExpress" className="h-10 w-auto mx-auto" />}
         </Link>
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white font-display">
           {t('welcome_back')}
