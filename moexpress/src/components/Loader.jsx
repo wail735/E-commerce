@@ -1,213 +1,101 @@
-import React, { useEffect, useRef } from "react";
-import { gsap } from "gsap";
-import logo from "../assets/logos/logof.png";
+import React, { useEffect, useState } from 'react';
+import './Loader.css';
 
-function Loader({ onComplete }) {
-  const overlayRef  = useRef(null);
-  const logoWrapRef = useRef(null);
-  const logoRef     = useRef(null);
-  const glowRef     = useRef(null);
-  const ringRef     = useRef(null);
-  const taglineRef  = useRef(null);
-  const percentRef  = useRef(null);
-  const barFillRef  = useRef(null);
-  const panel1Ref   = useRef(null);
-  const panel2Ref   = useRef(null);
+const Loader = ({
+  messages = [
+    "Connexion à MOExpress...",
+    "Chargement des produits...",
+    "Préparation de votre session..."
+  ],
+  onComplete,
+  duration = 2500
+}) => {
+  const [currentText, setCurrentText] = useState(messages[0] || "");
 
   useEffect(() => {
-    /* ── SVG circle setup ── */
-    const circle = ringRef.current;
-    if (circle) {
-      const r   = circle.r.baseVal.value;
-      const c   = 2 * Math.PI * r;
-      circle.style.strokeDasharray  = c;
-      circle.style.strokeDashoffset = c;
-    }
+    if (!messages.length) return;
+    let index = 0;
+    const interval = setInterval(() => {
+      index = (index + 1) % messages.length;
+      setCurrentText(messages[index]);
+    }, duration / messages.length);
 
-    const ctx = gsap.context(() => {
-      /* ── Initial states ── */
-      gsap.set([logoWrapRef.current, taglineRef.current, percentRef.current],
-        { opacity: 0, y: 24 });
-      gsap.set(glowRef.current,   { opacity: 0, scale: 0.6 });
+    return () => clearInterval(interval);
+  }, [messages, duration]);
 
-      /* ── Entrance timeline ── */
-      const tl = gsap.timeline({
-        defaults: { ease: "power3.out" },
-        onComplete: () => {
-          // split-panel exit
-          gsap.to(panel1Ref.current, {
-            yPercent: -100, duration: 0.9, ease: "power4.inOut", delay: 0.15,
-          });
-          gsap.to(panel2Ref.current, {
-            yPercent: 100, duration: 0.9, ease: "power4.inOut", delay: 0.15,
-            onComplete: () => onComplete?.(),
-          });
-        },
-      });
-
-      tl
-        // glow blooms first
-        .to(glowRef.current, { opacity: 1, scale: 1, duration: 1, ease: "power2.out" })
-        // logo slides up
-        .to(logoWrapRef.current, { opacity: 1, y: 0, duration: 0.7, ease: "back.out(1.4)" }, "-=0.5")
-        // tagline
-        .to(taglineRef.current,  { opacity: 1, y: 0, duration: 0.55 }, "-=0.2")
-        // percent label
-        .to(percentRef.current,  { opacity: 1, y: 0, duration: 0.4  }, "-=0.2");
-
-      /* ── SVG ring progress ── */
-      if (circle) {
-        const r = circle.r.baseVal.value;
-        const c = 2 * Math.PI * r;
-        gsap.to(circle, {
-          strokeDashoffset: 0,
-          duration: 1.8,
-          ease: "power1.inOut",
-          delay: 0.6,
-        });
-      }
-
-      /* ── Bar fill ── */
-      gsap.to(barFillRef.current, {
-        scaleX: 1,
-        duration: 1.8,
-        ease: "power1.inOut",
-        delay: 0.6,
-        transformOrigin: "left",
-      });
-      gsap.set(barFillRef.current, { scaleX: 0, transformOrigin: "left" });
-
-      /* ── Percent counter ── */
-      const obj = { val: 0 };
-      gsap.to(obj, {
-        val: 100,
-        duration: 1.8,
-        ease: "power1.inOut",
-        delay: 0.6,
-        onUpdate: () => {
-          if (percentRef.current)
-            percentRef.current.textContent = Math.round(obj.val) + "%";
-        },
-      });
-
-      /* ── Subtle logo float ── */
-      gsap.to(logoWrapRef.current, {
-        y: -8, duration: 2.4, repeat: -1, yoyo: true,
-        ease: "sine.inOut", delay: 1.2,
-      });
-
-    }, overlayRef);
-
-    return () => ctx.revert();
-  }, [onComplete]);
+  useEffect(() => {
+    if (!onComplete) return;
+    const timer = setTimeout(() => onComplete(), duration);
+    return () => clearTimeout(timer);
+  }, [onComplete, duration]);
 
   return (
-    /* Two-panel container for split exit */
-    <div ref={overlayRef} className="fixed inset-0 z-[9999] pointer-events-none">
+    <div className="moe-loader-overlay" role="status" aria-live="polite">
+      <div className="moe-loader-content">
 
-      {/* Panel top */}
-      <div
-        ref={panel1Ref}
-        className="absolute inset-x-0 top-0 h-1/2 bg-[#0D0D0D] pointer-events-auto"
-      />
-      {/* Panel bottom */}
-      <div
-        ref={panel2Ref}
-        className="absolute inset-x-0 bottom-0 h-1/2 bg-[#0D0D0D] pointer-events-auto"
-      />
+        {/* Scène du Camion Modernisé */}
+        <div className="moe-truck-scene">
 
-      {/* ── Centered content (sits above both panels) ── */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center gap-8 pointer-events-none">
+          {/* Lignes de vitesse en arrière-plan */}
+          <div className="moe-speed-lines">
+            <span className="line l1"></span>
+            <span className="line l2"></span>
+            <span className="line l3"></span>
+          </div>
 
-        {/* Ambient glow */}
-        <div
-          ref={glowRef}
-          className="absolute w-[480px] h-[480px] rounded-full pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(circle, rgba(255,77,32,0.18) 0%, rgba(255,120,50,0.07) 50%, transparent 75%)",
-          }}
-        />
+          {/* SVG du Camion Épuré / Tech */}
+          <div className="moe-truck-body">
+            <svg viewBox="0 0 160 70" className="moe-truck-svg">
+              {/* Conteneur / Caisse arrière */}
+              <rect x="5" y="10" width="95" height="42" rx="6" fill="#1e293b" />
+              {/* Bande Express sur le conteneur */}
+              <path d="M 20 10 L 40 10 L 25 52 L 5 52 Z" fill="#f83d3d" />
+              <text x="48" y="35" fill="#ffffff" fontSize="10" fontWeight="800" fontFamily="sans-serif" letterSpacing="0.5">
+                MOEXPRESS
+              </text>
 
-        {/* SVG ring + logo */}
-        <div className="relative flex items-center justify-center">
-          {/* Spinning ring */}
-          <svg width="160" height="160" className="-rotate-90 absolute">
-            {/* Track */}
-            <circle
-              cx="80" cy="80" r="72"
-              fill="none"
-              stroke="rgba(255,255,255,0.06)"
-              strokeWidth="3"
-            />
-            {/* Progress */}
-            <circle
-              ref={ringRef}
-              cx="80" cy="80" r="72"
-              fill="none"
-              stroke="url(#ringGrad)"
-              strokeWidth="3"
-              strokeLinecap="round"
-            />
-            <defs>
-              <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%"   stopColor="#FF4D20" />
-                <stop offset="100%" stopColor="#FF9A3C" />
-              </linearGradient>
-            </defs>
-          </svg>
+              {/* Cabine avant */}
+              <path d="M 100 22 H 128 C 133 22 138 26 141 31 L 148 42 C 150 45 150 52 145 52 H 100 V 22 Z" fill="#f83d3d" />
+              {/* Pare-brise */}
+              <path d="M 108 26 H 125 C 128 26 131 29 133 33 L 137 40 H 108 V 26 Z" fill="#0f172a" />
 
-          {/* Logo inside ring */}
-          <div ref={logoWrapRef} className="relative z-10">
-            <div className="w-28 h-28 rounded-full bg-white/5 backdrop-blur-sm border border-white/10 flex items-center justify-center shadow-2xl">
-              <img
-                ref={logoRef}
-                src={logo}
-                alt="MoExpress"
-                className="w-20 h-auto object-contain brightness-0 invert"
-              />
+              {/* Phare avant moderne (LED Neon) */}
+              <rect x="146" y="44" width="4" height="5" rx="1.5" fill="#facc15" className="moe-headlight-glow" />
+
+              {/* Pare-chocs */}
+              <rect x="144" y="49" width="6" height="3" rx="1" fill="#64748b" />
+            </svg>
+
+            {/* Micro-particules d'échappement (Fumée fluide) */}
+            <div className="moe-exhaust">
+              <span className="p1"></span>
+              <span className="p2"></span>
+              <span className="p3"></span>
             </div>
           </div>
+
+          {/* Roues distinctes animées */}
+          <div className="moe-wheels">
+            <div className="wheel w-back">
+              <div className="rim"></div>
+            </div>
+            <div className="wheel w-front">
+              <div className="rim"></div>
+            </div>
+          </div>
+
+          {/* Route avec ombre portée et vitesse */}
+          <div className="moe-road"></div>
         </div>
 
-        {/* Tagline */}
-        <p
-          ref={taglineRef}
-          className="text-[11px] text-white/30 tracking-[0.3em] uppercase font-medium"
-        >
-          Your smart shopping destination
-        </p>
-
-        {/* Bottom progress bar + percent */}
-        <div className="w-64 flex flex-col gap-2">
-          {/* Thin bar */}
-          <div className="w-full h-[2px] bg-white/10 rounded-full overflow-hidden">
-            <div
-              ref={barFillRef}
-              className="h-full w-full rounded-full"
-              style={{
-                background: "linear-gradient(90deg, #FF4D20 0%, #FF9A3C 100%)",
-              }}
-            />
-          </div>
-          {/* Percent */}
-          <div className="flex justify-between items-center">
-            <span className="text-[10px] text-white/20 tracking-widest uppercase">
-              Loading
-            </span>
-            <span
-              ref={percentRef}
-              className="text-[11px] font-bold tabular-nums"
-              style={{ color: "#FF4D20" }}
-            >
-              0%
-            </span>
-          </div>
+        {/* Branding & Message */}
+        <div className="moe-text-wrapper">
+          <p className="moe-loading-msg">{currentText}</p>
         </div>
 
       </div>
     </div>
   );
-}
+};
 
 export default Loader;
