@@ -6,17 +6,23 @@ import { CartProvider } from './context/CartContext.jsx'
 import { WishlistProvider } from './context/WishlistContext.jsx'
 import { ThemeProvider } from './context/ThemeContext.jsx'
 import { LanguageProvider } from './context/LanguageContext.jsx'
+import { AuthProvider } from './context/AuthContext.jsx'
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <ThemeProvider>
+    <GoogleOAuthProvider clientId="300086591465-r1c57ocvu8lfq9so3qb2k3qa8v91uok8.apps.googleusercontent.com">
+      <ThemeProvider>
       <LanguageProvider>
-        <WishlistProvider>
-          <CartProvider>
-            <App />
-          </CartProvider>
-        </WishlistProvider>
+        <AuthProvider>
+          <WishlistProvider>
+            <CartProvider>
+              <App />
+            </CartProvider>
+          </WishlistProvider>
+        </AuthProvider>
       </LanguageProvider>
-    </ThemeProvider>
+      </ThemeProvider>
+    </GoogleOAuthProvider>
   </StrictMode>,
 )

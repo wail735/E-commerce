@@ -7,6 +7,7 @@ import rateLimit from "express-rate-limit"; // utilisé pour limiter le nombre d
 
 import { errorHandler } from "./middlewares/error.middleware.js";
 import { notFound } from "./middlewares/notFound.middleware.js";
+import authRoutes from "./routes/auth.routes.js";
 
 const app = express();
 
@@ -17,7 +18,7 @@ app.use(
     credentials: true, 
   })
 );
-app.use(mongoSanitize()); 
+// app.use(mongoSanitize()); // Désactivé temporairement car cause un bug avec Express 5
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, 
@@ -35,6 +36,9 @@ if (process.env.NODE_ENV === "development") {
 app.get("/api/v1/health", (req, res) => {
   res.status(200).json({ status: "success", message: "Le serveur fonctionne parfaitement !" });
 });
+
+// Routes
+app.use("/api/auth", authRoutes);
 app.use(notFound);
 app.use(errorHandler);
 

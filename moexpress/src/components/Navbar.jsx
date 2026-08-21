@@ -6,6 +6,7 @@ import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
 import { useTheme } from "../context/ThemeContext";
 import { useLanguage } from "../context/LanguageContext";
+import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import logoF from "../assets/logos/logof.png";
 function Navbar() {
@@ -15,6 +16,7 @@ function Navbar() {
     const { wishlistCount } = useWishlist();
     const { theme, toggleTheme } = useTheme();
     const { language, changeLanguage, t } = useLanguage();
+    const { user, logout } = useAuth();
     const [searchQuery, setSearchQuery] = useState("");
     const navigate = useNavigate();
 
@@ -131,11 +133,15 @@ function Navbar() {
                                 </div>
                             </div>
 
-                            <Link to="/login" className="hidden lg:flex items-center gap-2 px-2 py-1.5 rounded-lg text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                            <Link to={user ? "/profile" : "/login"} className="hidden lg:flex items-center gap-2 px-2 py-1.5 rounded-lg text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
                                 <User size={21} />
                                 <div className="flex flex-col">
-                                    <span className="text-[10px] text-gray-500 dark:text-gray-400 leading-none mb-1">{t('hello_sign_in')}</span>
-                                    <span className="text-sm font-semibold leading-none whitespace-nowrap">{t('account')}</span>
+                                    <span className="text-[10px] text-gray-500 dark:text-gray-400 leading-none mb-1">
+                                        {user ? `Bonjour, ${user.name.split(' ')[0]}` : t('hello_sign_in')}
+                                    </span>
+                                    <span className="text-sm font-semibold leading-none whitespace-nowrap">
+                                        {user ? t('my_account') : t('account')}
+                                    </span>
                                 </div>
                             </Link>
 
@@ -206,7 +212,9 @@ function Navbar() {
                 <div className={`relative w-4/5 max-w-sm bg-white dark:bg-[#0B1120] h-full shadow-2xl flex flex-col transition-transform duration-300 ease-out ${open ? "translate-x-0" : "-translate-x-full"}`}>
                     <div className="bg-dark text-white p-4 flex items-center gap-3">
                         <div className="bg-primary p-2 rounded-full"><User size={22} /></div>
-                        <span className="text-base font-bold">{t('hello_sign_in')}</span>
+                        <span className="text-base font-bold">
+                            {user ? `Bonjour, ${user.name.split(' ')[0]}` : t('hello_sign_in')}
+                        </span>
                         <button onClick={closeMenu} className="ml-auto text-white"><X size={24} /></button>
                     </div>
                     <div className="flex-1 overflow-y-auto py-2">

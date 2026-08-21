@@ -13,6 +13,9 @@ import Checkout from "../pages/Checkout";
 import SearchResults from '../pages/SearchResults';
 import FlashDeals from '../pages/FlashDeals';
 import Wishlist from '../pages/Wishlist';
+import VerifyOtp from '../pages/VerifyOtp';
+import ForgotPassword from '../pages/ForgotPassword';
+import ResetPassword from '../pages/ResetPassword';
 
 function AppRoutes() {
     return (
@@ -26,6 +29,9 @@ function AppRoutes() {
                 <Route path="checkout" element={<Checkout />} />
                 <Route path="login" element={<Login />} />
                 <Route path="register" element={<Register />} />
+                <Route path="verify-otp" element={<VerifyOtp />} />
+                <Route path="forgot-password" element={<ForgotPassword />} />
+                <Route path="reset-password" element={<ResetPassword />} />
                 <Route path="profile" element={<Profile />} />
                 <Route path="wishlist" element={<Wishlist />} />
                 <Route path="search" element={<SearchResults />} />

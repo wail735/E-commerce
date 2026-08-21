@@ -1,26 +1,74 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import logo from '../assets/logos/logo.png';
 import logoF from '../assets/logos/logof.png';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
+import { useAuth } from '../context/AuthContext';
+import { useGoogleLogin } from '@react-oauth/google';
 
 const Register = () => {
+  const navigate = useNavigate();
   const { t } = useLanguage();
   const { theme } = useTheme();
+  const { login } = useAuth();
   const [data, setData] = useState({
     name:"",
     email:"",
     password:""
   })
-  const handleSubmit=(e)=>{
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await axios.post('http://localhost:5000/api/auth/register', data);
+
+      if (response.data.success) {
+        // Rediriger vers OTP avec l'email dans l'URL
+        navigate(`/verify-otp?email=${encodeURIComponent(data.email)}`);
+      }
+    } catch (err) {
+      if (err.response && err.response.data && err.response.data.message) {
+        setError(err.response.data.message);
+      } else {
+        setError('Erreur de connexion au serveur');
+      }
+    } finally {
+      setLoading(false);
+    }
   }
   const handleChange = (e) => {
     const {name,value} = e.target;
     setData({ ...data, [name]: value });
-    
   }
+
+  const handleGoogleSuccess = async (tokenResponse) => {
+      try {
+          const res = await axios.post('http://localhost:5000/api/auth/google', {
+              access_token: tokenResponse.access_token,
+          });
+
+          if (res.data.success) {
+              login(res.data.user, res.data.token);
+              navigate('/');
+          }
+      } catch (err) {
+          console.error("Google Login Error:", err);
+          setError(err.response?.data?.message || "L'inscription Google a échoué");
+      }
+  };
+
+  const googleLogin = useGoogleLogin({
+      onSuccess: handleGoogleSuccess,
+      onError: () => setError("L'inscription Google a échoué"),
+  });
+
   return (
     <div className="min-h-[calc(100vh-70px)] bg-[#F8F9FA] dark:bg-[#0B1120] transition-colors duration-300 flex flex-col justify-center py-12 sm:px-6 lg:px-8 mb-10">
       
@@ -39,7 +87,12 @@ const Register = () => {
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white dark:bg-gray-800 py-8 px-4 shadow-sm border border-gray-100 dark:border-gray-700 sm:rounded-2xl sm:px-10">
           
-          <form className="space-y-5">
+          {error && (
+            <div className="mb-4 bg-red-50 border-l-4 border-red-500 p-4 text-red-700 text-sm">
+              {error}
+            </div>
+          )}
+          <form className="space-y-5" onSubmit={handleSubmit}>
             
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -106,10 +159,11 @@ const Register = () => {
 
             <div className="pt-2">
               <button
-                type="button"
-                className="w-full flex justify-center py-3.5 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-[#FF4D20] hover:bg-[#e6461c] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#FF4D20] transition-colors"
+                type="submit"
+                disabled={loading}
+                className="w-full flex justify-center py-3.5 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-[#FF4D20] hover:bg-[#e6461c] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#FF4D20] transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
               >
-                {t('create_account')}
+                {loading ? 'Création en cours...' : t('create_account')}
               </button>
             </div>
           </form>
@@ -125,7 +179,7 @@ const Register = () => {
             </div>
 
             <div className="mt-6 grid grid-cols-2 gap-3">
-              <button className="w-full inline-flex justify-center items-center gap-2 py-3 px-4 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm bg-white dark:bg-gray-900 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+              <button onClick={() => googleLogin()} type="button" className="w-full inline-flex justify-center items-center gap-2 py-3 px-4 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm bg-white dark:bg-gray-900 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
                   <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
                   <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
