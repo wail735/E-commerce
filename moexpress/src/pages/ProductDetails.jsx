@@ -320,11 +320,11 @@ const ProductDetails = () => {
                   <div>
                     <h4 className="font-bold text-gray-900 dark:text-white mb-2">{t('key_features')}</h4>
                     <ul className="list-disc list-inside space-y-2 text-gray-600 dark:text-gray-400">
-                      <li>High-quality durable materials</li>
-                      <li>Lightweight and portable design</li>
-                      <li>Energy-efficient technology</li>
-                      <li>1-Year Manufacturer Warranty</li>
-                      <li>Easy to set up and use</li>
+                      <li>{t('feature_1')}</li>
+                      <li>{t('feature_2')}</li>
+                      <li>{t('feature_3')}</li>
+                      <li>{t('feature_4')}</li>
+                      <li>{t('feature_5')}</li>
                     </ul>
                   </div>
                   <div>
