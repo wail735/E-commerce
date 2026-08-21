@@ -3,9 +3,11 @@ import { Link } from 'react-router-dom';
 import logo from '../assets/logos/logo.png';
 import logoF from '../assets/logos/logof.png';
 import { useLanguage } from '../context/LanguageContext';
+import { useTheme } from '../context/ThemeContext';
 
 const Login = () => {
     const { t } = useLanguage();
+    const { theme } = useTheme();
     const [formData, setFormData] = useState({
         email: "",
         password: ""
