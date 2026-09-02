@@ -22,8 +22,3 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-
-.env
-backend/.env
-moexpress/.env
-backend/uploads/temp/

@@ -1,0 +1,213 @@
+/* Overlay moderne avec flou artistique */
+.moe-loader-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 9999;
+}
+
+.moe-loader-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+/* Zone d'animation du camion */
+.moe-truck-scene {
+  position: relative;
+  width: 200px;
+  height: 90px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+/* Suspension physique du camion */
+.moe-truck-body {
+  position: relative;
+  width: 160px;
+  height: 70px;
+  z-index: 2;
+  /* Rend le rebond plus dynamique et moins linéaire */
+  animation: truckBounce 0.6s cubic-bezier(0.36, 0, 0.66, -0.56) infinite alternate;
+}
+
+.moe-truck-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 12px 10px rgba(0, 0, 0, 0.4));
+  transition: filter 0.3s ease;
+}
+
+/* Lueur intense du phare LED */
+.moe-headlight-glow {
+  filter: drop-shadow(4px 0px 6px #facc15);
+  animation: headlightPulse 1s infinite alternate;
+}
+
+/* Roues indépendantes */
+.moe-wheels {
+  position: absolute;
+  bottom: 8px;
+  width: 160px;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 16px 0 28px;
+  box-sizing: border-box;
+  z-index: 3;
+}
+
+.wheel {
+  width: 22px;
+  height: 22px;
+  background-color: #0f172a;
+  border: 2px solid #64748b;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: wheelSpin 0.4s linear infinite;
+}
+
+.wheel .rim {
+  width: 8px;
+  height: 8px;
+  background-color: #f83d3d;
+  border-radius: 2px;
+}
+
+/* Route défilante fluide */
+.moe-road {
+  width: 100%;
+  height: 3px;
+  border-radius: 2px;
+  background: repeating-linear-gradient(
+    90deg,
+    #f83d3d 0px,
+    #f83d3d 15px,
+    transparent 15px,
+    transparent 30px,
+    #ffffff 30px,
+    #ffffff 50px,
+    transparent 50px,
+    transparent 65px
+  );
+  background-size: 130px 100%;
+  animation: roadMove 0.5s linear infinite;
+  box-shadow: 0 4px 10px rgba(248, 61, 61, 0.4);
+}
+
+/* Lignes de vitesse arrière-plan */
+.moe-speed-lines {
+  position: absolute;
+  top: 10px;
+  width: 100%;
+  height: 40px;
+  z-index: 1;
+}
+
+.moe-speed-lines .line {
+  position: absolute;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+  animation: speedLine 0.8s linear infinite;
+}
+
+.l1 { top: 5px; width: 40px; animation-delay: 0s; }
+.l2 { top: 20px; width: 60px; animation-delay: 0.3s; }
+.l3 { top: 35px; width: 30px; animation-delay: 0.15s; }
+
+/* Micro-particules d'échappement */
+.moe-exhaust {
+  position: absolute;
+  left: -10px;
+  bottom: 12px;
+}
+
+.moe-exhaust span {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  filter: blur(2px);
+  animation: exhaustSmoke 0.8s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+}
+
+.p2 { animation-delay: 0.25s; }
+.p3 { animation-delay: 0.5s; }
+
+/* Message de chargement */
+.moe-text-wrapper {
+  text-align: center;
+}
+
+.moe-loading-msg {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #f8fafc;
+  letter-spacing: 0.4px;
+  margin: 0;
+  animation: textFade 0.4s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Ajout de l'animation des 3 petits points */
+.moe-loading-msg::after {
+  content: '';
+  display: inline-block;
+  width: 1.5em;
+  text-align: left;
+  animation: ellipsis 1.5s infinite step-start;
+}
+
+/* Animations Keyframes */
+@keyframes truckBounce {
+  0% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-3px) rotate(-0.5deg); }
+  100% { transform: translateY(-1px) rotate(0.5deg); }
+}
+
+@keyframes wheelSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes ellipsis {
+  0% { content: ''; }
+  25% { content: '.'; }
+  50% { content: '..'; }
+  75% { content: '...'; }
+}
+
+@keyframes roadMove {
+  from { background-position: 130px 0; }
+  to { background-position: 0 0; }
+}
+
+@keyframes speedLine {
+  0% { transform: translateX(200px); opacity: 0; }
+  50% { opacity: 1; }
+  100% { transform: translateX(-50px); opacity: 0; }
+}
+
+@keyframes exhaustSmoke {
+  0% { transform: translate(0, 0) scale(0.5); opacity: 0.8; }
+  100% { transform: translate(-30px, -15px) scale(3); opacity: 0; }
+}
+
+@keyframes headlightPulse {
+  0% { opacity: 0.7; filter: drop-shadow(4px 0px 4px rgba(250, 204, 21, 0.5)); }
+  100% { opacity: 1; filter: drop-shadow(8px 0px 15px rgba(250, 204, 21, 1)); }
+}
