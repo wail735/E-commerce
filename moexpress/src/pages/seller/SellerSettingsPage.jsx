@@ -91,7 +91,10 @@ export default function SellerSettingsPage() {
       await checkAuth(); // Refresh user context
       toast.success('Paramètres sauvegardés avec succès !');
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Erreur lors de la sauvegarde');
+      console.error("Settings save error:", err);
+      console.error("Response data:", err.response?.data);
+      const errorMsg = err.response?.data?.message || err.response?.data || err.message || 'Erreur lors de la sauvegarde';
+      toast.error(typeof errorMsg === 'string' ? errorMsg : JSON.stringify(errorMsg));
     } finally {
       setLoading(false);
     }
