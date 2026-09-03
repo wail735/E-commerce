@@ -57,7 +57,7 @@ export const sessionConfig = {
 
   // Store pour les sessions (MongoDB) - Seulement en production pour éviter les OOM en dev
   store: process.env.NODE_ENV === "production" ? MongoStore.create({
-    clientPromise: mongoose.connection.asPromise().then(() => mongoose.connection.getClient()),
+    mongoUrl: process.env.MONGO_URI,
     collectionName: "sessions",
     ttl: 24 * 60 * 60, // 24 heures
     autoRemove: "native",
