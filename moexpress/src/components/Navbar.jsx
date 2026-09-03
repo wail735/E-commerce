@@ -168,23 +168,23 @@ function Navbar() {
                             
                             <NotificationBell />
 
-                            <Link to="/wishlist" onClick={handleWishlistClick} className="flex items-center gap-1.5 sm:gap-2 px-1.5 sm:px-2 py-1.5 rounded-lg text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group">
+                            <Link to="/wishlist" onClick={closeMenu} className="flex items-center gap-1.5 sm:gap-2 px-1.5 sm:px-2 py-1.5 rounded-lg text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group">
                                 <div className="relative">
                                     <Heart size={22} className="sm:w-6 sm:h-6 group-hover:scale-105 transition-transform" />
-                                    {wishlistCount > viewedWishlist && (
+                                    {wishlistCount > 0 && (
                                         <span className="absolute -top-2 -right-2 bg-primary text-white text-[9px] sm:text-[10px] font-bold rounded-full h-[17px] w-[17px] sm:h-[18px] sm:w-[18px] flex items-center justify-center border-2 border-white dark:border-[#0B1120]">
-                                            {wishlistCount - viewedWishlist > 99 ? "99+" : wishlistCount - viewedWishlist}
+                                            {wishlistCount > 99 ? "99+" : wishlistCount}
                                         </span>
                                     )}
                                 </div>
                             </Link>
 
-                            <Link to="/cart" onClick={handleCartClick} className="flex items-center gap-1.5 sm:gap-2 px-1.5 sm:px-2 py-1.5 rounded-lg text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group">
+                            <Link to="/cart" onClick={closeMenu} className="flex items-center gap-1.5 sm:gap-2 px-1.5 sm:px-2 py-1.5 rounded-lg text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group">
                                 <div className="relative">
                                     <ShoppingCart size={22} className="sm:w-6 sm:h-6 group-hover:scale-105 transition-transform" />
-                                    {cartCount > viewedCart && (
+                                    {cartCount > 0 && (
                                         <span className="absolute -top-2 -right-2 bg-primary text-white text-[9px] sm:text-[10px] font-bold rounded-full h-[17px] w-[17px] sm:h-[18px] sm:w-[18px] flex items-center justify-center border-2 border-white dark:border-[#0B1120]">
-                                            {cartCount - viewedCart > 99 ? "99+" : cartCount - viewedCart}
+                                            {cartCount > 99 ? "99+" : cartCount}
                                         </span>
                                     )}
                                 </div>
@@ -276,19 +276,19 @@ function Navbar() {
                             </span>
                             <ChevronRight size={18} className="text-gray-400" />
                         </Link>
-                        <Link to="/cart" onClick={handleCartClick} className="flex items-center justify-between px-5 py-3.5 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-primary border-b border-gray-100 dark:border-gray-800">
+                        <Link to="/cart" onClick={closeMenu} className="flex items-center justify-between px-5 py-3.5 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-primary border-b border-gray-100 dark:border-gray-800">
                             <span className="font-medium">{t('my_cart')}</span>
-                            {cartCount > viewedCart && (
+                            {cartCount > 0 && (
                                 <span className="bg-primary text-white text-xs font-bold rounded-full px-2 py-0.5">
-                                    {cartCount - viewedCart > 99 ? "99+" : cartCount - viewedCart}
+                                    {cartCount > 99 ? "99+" : cartCount}
                                 </span>
                             )}
                         </Link>
-                        <Link to="/wishlist" onClick={handleWishlistClick} className="flex items-center justify-between px-5 py-3.5 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-primary border-b border-gray-100 dark:border-gray-800">
+                        <Link to="/wishlist" onClick={closeMenu} className="flex items-center justify-between px-5 py-3.5 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-primary border-b border-gray-100 dark:border-gray-800">
                             <span className="font-medium">{t('my_wishlist')}</span>
-                            {wishlistCount > viewedWishlist && (
+                            {wishlistCount > 0 && (
                                 <span className="bg-primary text-white text-xs font-bold rounded-full px-2 py-0.5">
-                                    {wishlistCount - viewedWishlist > 99 ? "99+" : wishlistCount - viewedWishlist}
+                                    {wishlistCount > 99 ? "99+" : wishlistCount}
                                 </span>
                             )}
                         </Link>
