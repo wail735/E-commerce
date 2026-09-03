@@ -288,13 +288,16 @@ export const getStoreProfile = async (req, res) => {
 export const updateProfile = async (req, res) => {
   try {
     const User = (await import("./user.model.js")).default;
-    const { firstName, lastName, email, phone, address } = req.body;
+    const { firstName, lastName, email, phone, address, storeName, description, socialLinks } = req.body;
     
     // Combine firstName and lastName into name if provided, otherwise keep existing logic
     const name = (firstName && lastName) ? `${firstName} ${lastName}` : req.body.name;
 
     const updateData = { email, phone, address };
     if (name) updateData.name = name;
+    if (storeName !== undefined) updateData.storeName = storeName;
+    if (description !== undefined) updateData.storeDescription = description;
+    if (socialLinks !== undefined) updateData.socialLinks = socialLinks;
 
     const updatedUser = await User.findByIdAndUpdate(
       req.user._id,

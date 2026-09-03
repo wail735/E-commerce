@@ -44,6 +44,7 @@ import SellerMarketingPage from '../pages/seller/SellerMarketingPage';
 import SellerPlaceholderPage from '../pages/seller/SellerPlaceholderPage';
 import SellerReportsPage from '../pages/seller/SellerReportsPage';
 import SellerShippingPage from '../pages/seller/SellerShippingPage';
+import SellerSettingsPage from '../pages/seller/SellerSettingsPage';
 
 // Admin Panel pages
 import AdminLayout from '../layouts/AdminLayout';
@@ -139,7 +140,7 @@ function AppRoutes() {
                 <Route path="support" element={<SupportPage />} />
                 <Route path="wallet" element={<MyWallet />} />
                 <Route path="subscription" element={<MySubscription />} />
-                <Route path="settings" element={<SellerPlaceholderPage title="seller_settings" />} />
+                <Route path="settings" element={<SellerSettingsPage />} />
             </Route>
 
             {/* Redirect Legacy Chat Links */}

@@ -78,6 +78,10 @@ const userSchema = new mongoose.Schema(
     storeLogo: {
       type: String,
     },
+    socialLinks: {
+      facebook: String,
+      instagram: String
+    },
     // État d'activation du compte
     isActive: {
       type: Boolean,
