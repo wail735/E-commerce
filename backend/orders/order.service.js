@@ -125,7 +125,7 @@ export const createOrder = async (
  * Obtenir toutes les commandes de l'utilisateur avec infos des produits.
  */
 export const getUserOrders = async (userId) => {
-  return await Order.find({ customer: userId })
+  return await Order.find({ user: userId })
     .populate("items.product", "name price images")
     .sort({ createdAt: -1 });
 };
@@ -135,7 +135,7 @@ export const getUserOrders = async (userId) => {
  */
 export const getSellerOrders = async (sellerId) => {
   return await Order.find({ seller: sellerId })
-    .populate("customer", "name email")
+    .populate("user", "name email")
     .populate("items.product", "name price images")
     .sort({ createdAt: -1 });
 };
@@ -166,7 +166,7 @@ export const updateOrderStatus = async (orderId, sellerId, status, trackingNumbe
  */
 export const getAllOrders = async () => {
   return await Order.find()
-    .populate("customer", "name email")
+    .populate("user", "name email")
     .populate("seller", "storeName name email")
     .populate("items.product", "name price")
     .sort({ createdAt: -1 });
