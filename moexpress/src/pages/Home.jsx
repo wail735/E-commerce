@@ -225,28 +225,41 @@ function Home() {
         {/* Ouedkniss Style Full-Width Banner Ad */}
         {homepageAd && (
           <div className="my-8 w-full rounded-2xl overflow-hidden shadow-md border border-gray-100 dark:border-gray-800 relative group">
-            <a href={homepageAd.targetUrl} target="_blank" rel="noopener noreferrer" className="block relative w-full h-[120px] md:h-[160px] bg-gray-100 dark:bg-gray-800 overflow-hidden">
-              <img src={homepageAd.mediaUrl} alt={homepageAd.title} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-90"></div>
+            {(() => {
+              const url = homepageAd.targetUrl || "";
+              const isInternal = url.startsWith("/") || url.includes("localhost") || url.includes(window.location.hostname);
+              const internalPath = isInternal ? url.replace(/^.*\/\/[^\/]+/, '') : url; // extract path if it's a full URL
               
-              <div className="absolute top-3 left-3 bg-[#FF4D20] text-white text-[10px] md:text-[12px] font-black uppercase tracking-wider px-3 py-1 rounded shadow-md">
-                Sponsorisé
-              </div>
-              
-              <div className="absolute bottom-0 left-0 w-full p-4 md:p-6 flex justify-between items-end">
-                <div>
-                  <p className="text-white font-black text-[16px] md:text-[24px] leading-tight mb-1 line-clamp-1 shadow-sm">
-                    {homepageAd.title}
-                  </p>
-                  <p className="text-[#FF4D20] text-[12px] md:text-[14px] font-bold flex items-center gap-2">
-                    <span>Boutique : {homepageAd.advertiser?.name}</span>
-                  </p>
-                </div>
-                <div className="hidden md:flex bg-white/20 hover:bg-white/30 backdrop-blur-md text-white text-sm font-bold px-4 py-2 rounded-lg transition-colors items-center gap-2">
-                  Visiter l'offre <ChevronRight size={16} />
-                </div>
-              </div>
-            </a>
+              const Wrapper = isInternal ? Link : 'a';
+              const props = isInternal 
+                ? { to: internalPath } 
+                : { href: url, target: "_blank", rel: "noopener noreferrer" };
+
+              return (
+                <Wrapper {...props} className="block relative w-full h-[120px] md:h-[160px] bg-gray-100 dark:bg-gray-800 overflow-hidden">
+                  <img src={homepageAd.mediaUrl} alt={homepageAd.title} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-90"></div>
+                  
+                  <div className="absolute top-3 left-3 bg-[#FF4D20] text-white text-[10px] md:text-[12px] font-black uppercase tracking-wider px-3 py-1 rounded shadow-md">
+                    Sponsorisé
+                  </div>
+                  
+                  <div className="absolute bottom-0 left-0 w-full p-4 md:p-6 flex justify-between items-end">
+                    <div>
+                      <p className="text-white font-black text-[16px] md:text-[24px] leading-tight mb-1 line-clamp-1 shadow-sm">
+                        {homepageAd.title}
+                      </p>
+                      <p className="text-[#FF4D20] text-[12px] md:text-[14px] font-bold flex items-center gap-2">
+                        <span>Boutique : {homepageAd.advertiser?.name}</span>
+                      </p>
+                    </div>
+                    <div className="hidden md:flex bg-white/20 hover:bg-white/30 backdrop-blur-md text-white text-sm font-bold px-4 py-2 rounded-lg transition-colors items-center gap-2">
+                      Visiter l'offre <ChevronRight size={16} />
+                    </div>
+                  </div>
+                </Wrapper>
+              );
+            })()}
           </div>
         )}
 
