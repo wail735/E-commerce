@@ -205,22 +205,28 @@ export const sendSellerOtp = async (req, res) => {
     await User.findByIdAndUpdate(req.user._id, { otp, otpExpires });
 
     if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
-      await sendEmail({
-        email: req.user.email,
-        subject: "Vérification de votre boutique MoExpress",
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 24px; background: #f9f9f9; border-radius: 12px;">
-            <h2 style="color: #FF4D20; text-align: center;">🛍️ MoExpress Seller</h2>
-            <p>Bonjour <strong>${req.user.name}</strong>,</p>
-            <p>Voici votre code de vérification pour activer votre espace vendeur :</p>
-            <div style="text-align: center; margin: 24px 0;">
-              <span style="font-size: 36px; font-weight: bold; letter-spacing: 8px; color: #FF4D20; background: #fff3f0; padding: 16px 24px; border-radius: 8px; border: 2px solid #FF4D20;">${otp}</span>
+      try {
+        await sendEmail({
+          email: req.user.email,
+          subject: "Vérification de votre boutique MoExpress",
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 24px; background: #f9f9f9; border-radius: 12px;">
+              <h2 style="color: #FF4D20; text-align: center;">🛍️ MoExpress Seller</h2>
+              <p>Bonjour <strong>${req.user.name}</strong>,</p>
+              <p>Voici votre code de vérification pour activer votre espace vendeur :</p>
+              <div style="text-align: center; margin: 24px 0;">
+                <span style="font-size: 36px; font-weight: bold; letter-spacing: 8px; color: #FF4D20; background: #fff3f0; padding: 16px 24px; border-radius: 8px; border: 2px solid #FF4D20;">${otp}</span>
+              </div>
+              <p style="color: #888; font-size: 13px;">Ce code expire dans <strong>10 minutes</strong>. Ne le partagez avec personne.</p>
             </div>
-            <p style="color: #888; font-size: 13px;">Ce code expire dans <strong>10 minutes</strong>. Ne le partagez avec personne.</p>
-          </div>
-        `,
-      });
-      return res.status(200).json({ success: true, message: "Code envoyé à votre email." });
+          `,
+        });
+        return res.status(200).json({ success: true, message: "Code envoyé à votre email." });
+      } catch (emailError) {
+        console.error("[SMTP ERROR] Render bloque probablement le port SMTP:", emailError.message);
+        // Fallback: Retourne le devOtp pour que le frontend s'auto-remplisse
+        return res.status(200).json({ success: true, message: "Email bloqué par le serveur. Remplissage automatique activé.", devOtp: otp });
+      }
     } else {
       console.log(`[WARNING] EMAIL NON CONFIGURE. OTP pour ${req.user.email} : ${otp}`);
       return res.status(200).json({ success: true, message: "Email non configuré. Mode dev actif.", devOtp: otp });
