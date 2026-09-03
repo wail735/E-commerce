@@ -42,6 +42,8 @@ import SellerOrdersPage from '../pages/seller/SellerOrdersPage';
 import SellerDisputesPage from '../pages/seller/SellerDisputesPage';
 import SellerMarketingPage from '../pages/seller/SellerMarketingPage';
 import SellerPlaceholderPage from '../pages/seller/SellerPlaceholderPage';
+import SellerReportsPage from '../pages/seller/SellerReportsPage';
+import SellerShippingPage from '../pages/seller/SellerShippingPage';
 
 // Admin Panel pages
 import AdminLayout from '../layouts/AdminLayout';
@@ -132,6 +134,8 @@ function AppRoutes() {
                 <Route path="messages" element={<Messenger />} />
                 <Route path="store" element={<SellerPlaceholderPage title="seller_store" />} />
                 <Route path="marketing" element={<SellerMarketingPage />} />
+                <Route path="reports" element={<SellerReportsPage />} />
+                <Route path="shipping" element={<SellerShippingPage />} />
                 <Route path="support" element={<SupportPage />} />
                 <Route path="wallet" element={<MyWallet />} />
                 <Route path="settings" element={<SellerPlaceholderPage title="seller_settings" />} />
