@@ -1,6 +1,12 @@
 import nodemailer from 'nodemailer';
 
 const sendEmail = async (options) => {
+  // Verify credentials exist to avoid unnecessary hanging
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    console.warn("⚠️ Avertissement: EMAIL_USER ou EMAIL_PASS n'est pas défini. L'email ne sera pas envoyé.");
+    return; // Skip email sending
+  }
+
   // 1. Créer le "transporter" (le service d'envoi d'email, ici Gmail)
   const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -8,6 +14,9 @@ const sendEmail = async (options) => {
       user: process.env.EMAIL_USER, // Votre adresse Gmail
       pass: process.env.EMAIL_PASS, // Le mot de passe d'application généré
     },
+    connectionTimeout: 5000, // Timeout if SMTP port is blocked
+    greetingTimeout: 5000,
+    socketTimeout: 5000,
   });
 
   // 2. Définir les options de l'email
