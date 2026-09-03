@@ -1,34 +1,45 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer,
   LineChart, Line, AreaChart, Area
 } from 'recharts';
 import { 
-  TrendingUp, Users, ShoppingBag, DollarSign, Calendar, Download, Filter, ArrowUpRight, ArrowDownRight
+  TrendingUp, Users, ShoppingBag, DollarSign, Calendar, Download, Filter, ArrowUpRight, ArrowDownRight, Loader2
 } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
-
-// Dummy data for charts
-const revenueData = [
-  { name: 'Lun', revenue: 4000, orders: 24 },
-  { name: 'Mar', revenue: 3000, orders: 18 },
-  { name: 'Mer', revenue: 5000, orders: 35 },
-  { name: 'Jeu', revenue: 2780, orders: 15 },
-  { name: 'Ven', revenue: 8900, orders: 58 },
-  { name: 'Sam', revenue: 12390, orders: 84 },
-  { name: 'Dim', revenue: 10490, orders: 72 },
-];
-
-const topProducts = [
-  { id: 1, name: "Montre Connectée Pro", sales: 124, revenue: 12400, stock: 45 },
-  { id: 2, name: "Écouteurs Sans Fil", sales: 98, revenue: 4900, stock: 12 },
-  { id: 3, name: "Sac à Dos Imperméable", sales: 85, revenue: 3400, stock: 156 },
-  { id: 4, name: "Clavier Mécanique RGB", sales: 64, revenue: 5120, stock: 0 },
-];
 
 export default function SellerReportsPage() {
   const { t } = useLanguage();
   const [period, setPeriod] = useState('7days');
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({
+    totalSales: 0,
+    totalOrders: 0,
+    visitors: 0,
+    conversionRate: 0,
+    salesChartData: [],
+    topProducts: []
+  });
+
+  useEffect(() => {
+    const fetchAnalytics = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const res = await axios.get(import.meta.env.VITE_API_URL + '/api/v1/orders/seller/stats', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.data?.success) {
+          setStats(res.data.data);
+        }
+      } catch (err) {
+        console.error("Erreur lors de la récupération des rapports:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAnalytics();
+  }, [period]);
 
   const StatCard = ({ title, value, trend, isPositive, icon: Icon }) => (
     <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm">
@@ -49,6 +60,14 @@ export default function SellerReportsPage() {
       </div>
     </div>
   );
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="animate-spin text-[#FF4D20]" size={40} />
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-6">
@@ -84,10 +103,10 @@ export default function SellerReportsPage() {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard title="Chiffre d'Affaires" value="124,500 DA" trend="+15.3%" isPositive={true} icon={DollarSign} />
-        <StatCard title="Commandes" value="342" trend="+8.1%" isPositive={true} icon={ShoppingBag} />
-        <StatCard title="Visiteurs" value="8,405" trend="-2.4%" isPositive={false} icon={Users} />
-        <StatCard title="Taux de Conversion" value="4.1%" trend="+1.2%" isPositive={true} icon={TrendingUp} />
+        <StatCard title="Chiffre d'Affaires" value={`${stats.totalSales?.toLocaleString()} DA`} trend="+15.3%" isPositive={true} icon={DollarSign} />
+        <StatCard title="Commandes" value={stats.totalOrders?.toString()} trend="+8.1%" isPositive={true} icon={ShoppingBag} />
+        <StatCard title="Visiteurs" value={stats.visitors?.toString()} trend="-2.4%" isPositive={false} icon={Users} />
+        <StatCard title="Taux de Conversion" value={`${stats.conversionRate}%`} trend="+1.2%" isPositive={true} icon={TrendingUp} />
       </div>
 
       {/* Charts Section */}
@@ -96,14 +115,14 @@ export default function SellerReportsPage() {
         {/* Main Chart */}
         <div className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm">
           <div className="flex justify-between items-center mb-6">
-            <h3 className="text-lg font-bold text-gray-900 dark:text-white">Évolution des Ventes</h3>
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white">Évolution des Ventes (30 Jours)</h3>
             <button className="text-sm font-medium text-[#FF4D20] flex items-center gap-1 hover:underline">
               Voir détails <ArrowUpRight size={16} />
             </button>
           </div>
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={revenueData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+              <AreaChart data={stats.salesChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#FF4D20" stopOpacity={0.3}/>
@@ -127,7 +146,7 @@ export default function SellerReportsPage() {
         <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm">
           <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6">Meilleurs Produits</h3>
           <div className="space-y-5">
-            {topProducts.map((product, index) => (
+            {stats.topProducts && stats.topProducts.length > 0 ? stats.topProducts.map((product, index) => (
               <div key={product.id} className="flex items-center gap-4">
                 <div className="w-10 h-10 rounded-lg bg-orange-100 dark:bg-orange-500/20 text-[#FF4D20] flex items-center justify-center font-bold text-sm shrink-0">
                   #{index + 1}
@@ -137,13 +156,15 @@ export default function SellerReportsPage() {
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{product.sales} ventes</p>
                 </div>
                 <div className="text-right shrink-0">
-                  <p className="text-sm font-bold text-gray-900 dark:text-white">{product.revenue} DA</p>
+                  <p className="text-sm font-bold text-gray-900 dark:text-white">{product.revenue?.toLocaleString()} DA</p>
                   <p className={`text-[10px] font-medium mt-0.5 ${product.stock > 10 ? 'text-emerald-500' : 'text-red-500'}`}>
                     {product.stock > 0 ? `Stock: ${product.stock}` : 'Rupture'}
                   </p>
                 </div>
               </div>
-            ))}
+            )) : (
+              <p className="text-sm text-gray-500 text-center py-8">Aucune vente pour le moment.</p>
+            )}
           </div>
         </div>
       </div>

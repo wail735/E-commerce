@@ -207,7 +207,22 @@ export const getSellerStats = async (sellerId) => {
 
   const salesChartData = salesDataAggregation.map((d) => ({
     name: d._id,
-    sales: d.sales,
+    revenue: d.sales,
+  }));
+
+  // Top Products Aggregation
+  const Product = (await import("../products/product.model.js")).default;
+  const topProductsRaw = await Product.find({ seller: sellerId })
+    .sort({ salesCount: -1 })
+    .limit(4)
+    .select("name price salesCount quantity");
+
+  const topProducts = topProductsRaw.map((p, index) => ({
+    id: p._id,
+    name: p.name,
+    sales: p.salesCount || 0,
+    revenue: (p.salesCount || 0) * (p.price || 0),
+    stock: p.quantity || 0
   }));
 
   return {
@@ -215,6 +230,7 @@ export const getSellerStats = async (sellerId) => {
     totalOrders,
     visitors: 1250, // Mock for now
     conversionRate: "4.2", // Mock for now
-    salesChartData
+    salesChartData,
+    topProducts
   };
 };
