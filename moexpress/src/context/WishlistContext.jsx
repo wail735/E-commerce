@@ -26,18 +26,19 @@ export const WishlistProvider = ({ children }) => {
   }, [wishlistItems]);
 
   const toggleWishlist = (product) => {
+    const productId = product._id || product.id;
     setWishlistItems((prev) => {
-      const exists = prev.find((item) => item.id === product.id);
+      const exists = prev.find((item) => (item._id || item.id) === productId);
       if (exists) {
-        return prev.filter((item) => item.id !== product.id);
+        return prev.filter((item) => (item._id || item.id) !== productId);
       } else {
-        return [...prev, product];
+        return [...prev, { ...product, id: productId }];
       }
     });
   };
 
   const isInWishlist = (productId) => {
-    return wishlistItems.some((item) => item.id === productId);
+    return wishlistItems.some((item) => (item._id || item.id) === productId);
   };
 
   const wishlistCount = wishlistItems.length;
