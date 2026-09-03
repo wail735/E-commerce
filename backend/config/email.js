@@ -38,9 +38,14 @@ const __dirname = path.dirname(__filename);
  */
 const createTransporter = () => {
   // Vérifier que les variables d'environnement sont définies
-  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
-    console.error("❌ Variables d'email manquantes dans le fichier .env");
-    throw new Error("Configuration email incomplète");
+  if (!process.env.BREVO_API_KEY && (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD)) {
+    console.warn("⚠️ Variables d'email manquantes dans le fichier .env (Mode Dev actif)");
+    return null; // Retourne null au lieu de throw pour ne pas crasher l'app
+  }
+
+  // Si on utilise Brevo REST API, pas besoin de transporteur SMTP classique
+  if (process.env.BREVO_API_KEY) {
+    return 'brevo';
   }
 
   // Configuration du transporteur
@@ -82,45 +87,66 @@ export const sendEmail = async (options) => {
   try {
     const transporter = createTransporter();
 
+    // Dev mode fallback
+    if (!transporter) {
+      console.log(`[DEV MODE] Email bloqué/non configuré pour ${options.to}`);
+      return null;
+    }
+
     // Vérifier que le destinataire est défini
     if (!options.to) {
       throw new Error("Le destinataire est requis");
     }
 
-    // Construire les options de l'email
+    // Si on utilise l'API REST de Brevo
+    if (transporter === 'brevo') {
+      const axios = (await import('axios')).default;
+      const payload = {
+        sender: {
+          name: process.env.EMAIL_FROM_NAME || "MoExpress",
+          email: process.env.EMAIL_FROM || process.env.EMAIL_USER || "contact@moexpress.com"
+        },
+        to: Array.isArray(options.to) ? options.to.map(e => ({ email: e })) : [{ email: options.to }],
+        subject: options.subject || "Message de la plateforme",
+        htmlContent: options.html,
+      };
+      
+      if (options.text) {
+         payload.textContent = options.text;
+      }
+
+      await axios.post('https://api.brevo.com/v3/smtp/email', payload, {
+        headers: {
+          'api-key': process.env.BREVO_API_KEY,
+          'Content-Type': 'application/json',
+          'accept': 'application/json'
+        }
+      });
+      console.log(`✅ Email envoyé avec succès à ${options.to} via Brevo`);
+      return { messageId: "brevo-" + Date.now() };
+    }
+
+    // Construire les options de l'email pour nodemailer
     const mailOptions = {
-      // Expéditeur
       from: {
         name: process.env.EMAIL_FROM_NAME || "Plateforme E-commerce",
         address: process.env.EMAIL_FROM || process.env.EMAIL_USER,
       },
-      // Destinataires (peut être un tableau)
       to: options.to,
-      // Copie carbone
       cc: options.cc || [],
-      // Copie carbone cachée
       bcc: options.bcc || [],
-      // Sujet
       subject: options.subject || "Message de la plateforme",
-      // Contenu HTML
       html: options.html,
-      // Contenu texte (alternative)
       text: options.text || options.html?.replace(/<[^>]*>/g, "") || "",
-      // Pièces jointes
       attachments: options.attachments || [],
-      // Headers personnalisés
       headers: options.headers || {},
-      // Reply-to
-      replyTo:
-        options.replyTo || process.env.EMAIL_REPLY_TO || process.env.EMAIL_FROM,
+      replyTo: options.replyTo || process.env.EMAIL_REPLY_TO || process.env.EMAIL_FROM,
     };
 
-    // Envoyer l'email
+    // Envoyer l'email via SMTP
     const info = await transporter.sendMail(mailOptions);
-
     console.log(`✅ Email envoyé avec succès à ${options.to}`);
     console.log(`📧 Message ID: ${info.messageId}`);
-
     return info;
   } catch (error) {
     console.error(`❌ Erreur d'envoi d'email: ${error.message}`);
