@@ -69,12 +69,18 @@ export default function SellerOnboarding() {
     setLoading(true);
     setError('');
     try {
-      await axios.post(
+      const res = await axios.post(
         import.meta.env.VITE_API_URL + '/api/v1/users/seller/send-otp',
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setOtpSent(true);
+      
+      // Auto-fill in dev mode if email wasn't configured
+      if (res.data?.devOtp) {
+        const digits = res.data.devOtp.split('');
+        setOtp(digits);
+      }
     } catch (err) {
       setError(err.response?.data?.message || 'Erreur lors de l\'envoi du code.');
     } finally {
