@@ -89,7 +89,7 @@ export const createOrder = async (
     const totalAmount = orderData.subtotal - discountAmount + shippingFee;
 
     const newOrder = new Order({
-      customer: user._id,
+      user: user._id,
       seller: sellerId === 'admin' ? null : sellerId,
       items: orderData.items,
       subtotal: orderData.subtotal,
