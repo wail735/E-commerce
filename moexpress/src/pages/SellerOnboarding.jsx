@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 import {
   Store, Rocket, CheckCircle, ArrowRight, ArrowLeft,
   Package, TrendingUp, ShieldCheck, Loader2, Mail, RefreshCw
@@ -76,10 +77,12 @@ export default function SellerOnboarding() {
       );
       setOtpSent(true);
       
-      // Auto-fill in dev mode if email wasn't configured
+      // Afficher un message de succès (ou d'avertissement si mode dev/fallback)
       if (res.data?.devOtp) {
-        const digits = res.data.devOtp.split('');
-        setOtp(digits);
+        toast.error("L'email n'a pas pu être envoyé (Vérifiez la clé API Brevo sur Render). Code de secours généré dans la console.");
+        console.log("🛠️ [MODE DEV] Code OTP de secours :", res.data.devOtp);
+      } else {
+        toast.success(res.data?.message || "Code envoyé avec succès !");
       }
     } catch (err) {
       setError(err.response?.data?.message || 'Erreur lors de l\'envoi du code.');
