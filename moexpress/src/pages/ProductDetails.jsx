@@ -98,9 +98,6 @@ const ProductDetails = () => {
     );
   }
 
-  const creatorId = typeof product.createdBy === 'object' ? product.createdBy?._id : product.createdBy;
-  const isOwnProduct = user && creatorId && (user._id === creatorId || user.id === creatorId);
-
   const getGalleryImages = (prod) => {
     if (prod.images && prod.images.length > 0) {
       return prod.images.map(img => img.url);
