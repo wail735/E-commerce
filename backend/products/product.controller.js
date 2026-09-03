@@ -5,6 +5,7 @@
 
 import * as productService from "./product.service.js";
 import { createProductDTO, updateProductDTO } from "./product.dto.js";
+import Product from "./product.model.js";
 
 /**
  * Créer un produit (Admin / SuperAdmin / Seller Pro)
@@ -31,6 +32,20 @@ export const createProduct = async (req, res, next) => {
     });
   } catch (error) {
     return res.status(400).json({ success: false, message: error.message });
+  }
+};
+
+/**
+ * Incrémenter le compteur de vues d'un produit (quand un visiteur l'ouvre)
+ */
+export const incrementProductView = async (req, res, next) => {
+  try {
+    const productId = req.params.id;
+    // On utilise $inc pour des performances optimales sans conflit de version (race condition)
+    await Product.findByIdAndUpdate(productId, { $inc: { views: 1 } });
+    return res.status(200).json({ success: true, message: "View incremented" });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
 

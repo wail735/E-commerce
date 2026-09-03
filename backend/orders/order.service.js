@@ -212,7 +212,7 @@ export const getSellerStats = async (sellerId) => {
 
   // Top Products Aggregation
   const Product = (await import("../products/product.model.js")).default;
-  const topProductsRaw = await Product.find({ seller: sellerId })
+  const topProductsRaw = await Product.find({ createdBy: sellerId })
     .sort({ salesCount: -1 })
     .limit(4)
     .select("name price salesCount quantity");
@@ -225,11 +225,31 @@ export const getSellerStats = async (sellerId) => {
     stock: p.quantity || 0
   }));
 
+  // Aggregate total views (visitors) for all products of this seller
+  const viewsAggregation = await Product.aggregate([
+    { $match: { createdBy: new mongoose.Types.ObjectId(sellerId) } },
+    {
+      $group: {
+        _id: null,
+        totalViews: { $sum: "$views" },
+      },
+    },
+  ]);
+  
+  const visitors = viewsAggregation.length > 0 ? viewsAggregation[0].totalViews : 0;
+  
+  // Calculate Conversion Rate
+  // Taux de conversion = (Commandes / Visiteurs) * 100
+  let conversionRate = 0;
+  if (visitors > 0) {
+    conversionRate = ((totalOrders / visitors) * 100).toFixed(1);
+  }
+
   return {
     totalSales,
     totalOrders,
-    visitors: 1250, // Mock for now
-    conversionRate: "4.2", // Mock for now
+    visitors,
+    conversionRate,
     salesChartData,
     topProducts
   };

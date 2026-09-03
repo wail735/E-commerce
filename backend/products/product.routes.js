@@ -21,6 +21,9 @@ router.get("/autocomplete", productController.autocomplete);
 // Route publique : GET /api/v1/products/:id (Détails d'un produit)
 router.get("/:id", productController.getProductById);
 
+// Route publique : POST /api/v1/products/:id/view (Incrémenter les vues)
+router.post("/:id/view", productController.incrementProductView);
+
 // Route publique : GET /api/v1/products/:id/reviews (Avis d'un produit)
 router.get("/:id/reviews", productController.getProductReviews);
 

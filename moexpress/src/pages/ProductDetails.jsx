@@ -62,6 +62,13 @@ const ProductDetails = () => {
             console.error("Error fetching related products", err);
           }
         }
+
+        // Increment product views
+        try {
+          await axios.post(`${import.meta.env.VITE_API_URL}/api/v1/products/${slug}/view`);
+        } catch (err) {
+          console.error("Error tracking view", err);
+        }
       } catch (error) {
         console.error("Error fetching product", error);
         setProduct(null);
