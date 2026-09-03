@@ -8,7 +8,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 
 export default function SellerSettingsPage() {
-  const { user, token, checkAuth } = useAuth();
+  const { user, token, updateUser } = useAuth();
   const { t } = useLanguage();
   
   const [loading, setLoading] = useState(false);
@@ -66,13 +66,13 @@ export default function SellerSettingsPage() {
     formDataObj.append('profilePicture', file);
 
     try {
-      await axios.put(`${import.meta.env.VITE_API_URL}/api/v1/users/profile-picture`, formDataObj, {
+      const res = await axios.put(`${import.meta.env.VITE_API_URL}/api/v1/users/profile-picture`, formDataObj, {
         headers: { 
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data'
         }
       });
-      await checkAuth(); // Refresh user data to get new picture
+      updateUser(res.data.data); // Update user data with new picture
       toast.success('Logo mis à jour !');
     } catch (err) {
       toast.error(err.response?.data?.message || 'Erreur lors du téléchargement');
@@ -85,10 +85,10 @@ export default function SellerSettingsPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      await axios.put(`${import.meta.env.VITE_API_URL}/api/v1/users/profile`, formData, {
+      const res = await axios.put(`${import.meta.env.VITE_API_URL}/api/v1/users/profile`, formData, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      await checkAuth(); // Refresh user context
+      updateUser(res.data.data); // Update user context with new settings
       toast.success('Paramètres sauvegardés avec succès !');
     } catch (err) {
       console.error("Settings save error:", err);
