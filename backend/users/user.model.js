@@ -34,11 +34,23 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
-    // Adresse
+    // Adresse (Legacy string field - kept for backward compatibility)
     address: {
       type: String,
       default: null,
     },
+    // Nouvelles Adresses multiples
+    addresses: [
+      {
+        name: { type: String, required: true },
+        street: { type: String, required: true },
+        city: { type: String, required: true },
+        zipCode: { type: String, required: true },
+        country: { type: String, default: 'Algérie' },
+        phone: { type: String },
+        isDefault: { type: Boolean, default: false }
+      }
+    ],
     // Mot de passe haché (masqué par défaut lors des requêtes select)
     password: {
       type: String,

@@ -329,3 +329,105 @@ export const updateProfilePicture = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
+/**
+ * Ajouter une adresse
+ */
+export const addAddress = async (req, res) => {
+  try {
+    const user = req.user; // vient du middleware protect
+    const { name, street, city, zipCode, country, phone, isDefault } = req.body;
+
+    if (!name || !street || !city || !zipCode) {
+      return res.status(400).json({ success: false, message: "Nom, rue, ville et code postal sont requis." });
+    }
+
+    // Si c'est la première adresse ou isDefault est true, on désactive les autres
+    if (isDefault || user.addresses.length === 0) {
+      user.addresses.forEach(a => a.isDefault = false);
+    }
+
+    const newAddress = {
+      name,
+      street,
+      city,
+      zipCode,
+      country: country || 'Algérie',
+      phone,
+      isDefault: isDefault || user.addresses.length === 0
+    };
+
+    user.addresses.push(newAddress);
+    await user.save();
+
+    return res.status(201).json({ success: true, message: "Adresse ajoutée avec succès.", data: user.addresses });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+/**
+ * Mettre à jour une adresse
+ */
+export const updateAddress = async (req, res) => {
+  try {
+    const user = req.user;
+    const { id } = req.params;
+    const { name, street, city, zipCode, country, phone, isDefault } = req.body;
+
+    const addressIndex = user.addresses.findIndex(a => a._id.toString() === id);
+    if (addressIndex === -1) {
+      return res.status(404).json({ success: false, message: "Adresse non trouvée." });
+    }
+
+    if (isDefault) {
+      user.addresses.forEach(a => a.isDefault = false);
+    }
+
+    user.addresses[addressIndex] = {
+      ...user.addresses[addressIndex].toObject(),
+      name: name || user.addresses[addressIndex].name,
+      street: street || user.addresses[addressIndex].street,
+      city: city || user.addresses[addressIndex].city,
+      zipCode: zipCode || user.addresses[addressIndex].zipCode,
+      country: country || user.addresses[addressIndex].country,
+      phone: phone !== undefined ? phone : user.addresses[addressIndex].phone,
+      isDefault: isDefault !== undefined ? isDefault : user.addresses[addressIndex].isDefault
+    };
+
+    await user.save();
+    return res.status(200).json({ success: true, message: "Adresse mise à jour.", data: user.addresses });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+/**
+ * Supprimer une adresse
+ */
+export const deleteAddress = async (req, res) => {
+  try {
+    const user = req.user;
+    const { id } = req.params;
+
+    const addressIndex = user.addresses.findIndex(a => a._id.toString() === id);
+    if (addressIndex === -1) {
+      return res.status(404).json({ success: false, message: "Adresse non trouvée." });
+    }
+
+    const wasDefault = user.addresses[addressIndex].isDefault;
+    
+    // Supprimer l'adresse
+    user.addresses.splice(addressIndex, 1);
+
+    // Si on a supprimé l'adresse par défaut et qu'il en reste, on met la première par défaut
+    if (wasDefault && user.addresses.length > 0) {
+      user.addresses[0].isDefault = true;
+    }
+
+    await user.save();
+    return res.status(200).json({ success: true, message: "Adresse supprimée.", data: user.addresses });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};

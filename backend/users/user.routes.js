@@ -21,6 +21,11 @@ router.put("/profile", userController.updateProfile);
 import { uploadProfilePicture } from "../config/multer.js";
 router.put("/profile-picture", uploadProfilePicture(), userController.updateProfilePicture);
 
+// Routes Adresses
+router.post("/addresses", userController.addAddress);
+router.put("/addresses/:id", userController.updateAddress);
+router.delete("/addresses/:id", userController.deleteAddress);
+
 router.get("/cart", userController.getCart);
 router.post("/cart", userController.addToCart);
 router.put("/cart", userController.updateCartQuantity);
