@@ -9,6 +9,8 @@ import MyOrders from "../pages/profile/MyOrders";
 import MyAds from "../pages/MyAds";
 import DashboardPlaceholder from "../pages/profile/DashboardPlaceholder";
 import Settings from "../pages/profile/Settings";
+import Addresses from "../pages/profile/Addresses";
+import PaymentMethods from "../pages/profile/PaymentMethods";
 import NotFound from "../pages/NotFound";
 import Cart from "../pages/Cart";
 import CategoryPage from "../pages/CategoryPage";
@@ -108,8 +110,8 @@ function AppRoutes() {
                 <Route path="dashboard" element={<DashboardPlaceholder title="Dashboard" />} />
                 <Route path="messages" element={<Messenger />} />
                 <Route path="wishlist" element={<Wishlist />} />
-                <Route path="addresses" element={<DashboardPlaceholder title="Addresses" />} />
-                <Route path="payments" element={<DashboardPlaceholder title="Payment Methods" />} />
+                <Route path="addresses" element={<Addresses />} />
+                <Route path="payments" element={<PaymentMethods />} />
                 <Route path="support" element={<SupportPage />} />
                 <Route path="wallet" element={<MyWallet />} />
                 <Route path="subscription" element={<MySubscription />} />
