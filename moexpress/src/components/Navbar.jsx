@@ -134,9 +134,17 @@ function Navbar() {
                                 </div>
                             </div>
 
-                            <Link to={user ? "/profile" : "/login"} className="hidden lg:flex items-center gap-2 px-2 py-1.5 rounded-lg text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                            {/* Dynamic Profile Link based on role */}
+                            <Link 
+                                to={!user ? "/login" : user.role === 'superAdmin' ? "/admin/dashboard" : user.role === 'seller' ? "/seller/dashboard" : "/profile"} 
+                                className="hidden lg:flex items-center gap-2 px-2 py-1.5 rounded-lg text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                            >
                                 {user?.profilePicture ? (
                                     <img src={user.profilePicture} alt="Profile" className="w-7 h-7 rounded-full object-cover shrink-0" />
+                                ) : user?.role === 'superAdmin' ? (
+                                    <Shield size={21} className="text-blue-500" />
+                                ) : user?.role === 'seller' ? (
+                                    <Store size={21} className="text-orange-500" />
                                 ) : (
                                     <User size={21} />
                                 )}
@@ -145,35 +153,10 @@ function Navbar() {
                                         {user ? `Bonjour, ${user.name.split(' ')[0]}` : t('hello_sign_in')}
                                     </span>
                                     <span className="text-sm font-semibold leading-none whitespace-nowrap flex items-center gap-1.5">
-                                        {user ? t('my_account') : t('account')}
-                                        {user?.role === 'seller' && (
-                                          <span className="text-[9px] font-black bg-[#FF4D20] text-white px-1.5 py-0.5 rounded-full leading-none">SELLER</span>
-                                        )}
+                                        {!user ? t('account') : user.role === 'superAdmin' ? "Panneau Admin" : user.role === 'seller' ? "Espace Seller" : t('my_account')}
                                     </span>
                                 </div>
                             </Link>
-
-                            {/* Lien Seller Center (visible seulement pour les vendeurs) */}
-                            {user?.role === 'seller' && (
-                              <Link to="/seller/dashboard" className="hidden lg:flex items-center gap-2 px-2 py-1.5 rounded-lg text-[#FF4D20] hover:bg-orange-50 dark:hover:bg-[#FF4D20]/10 transition-colors">
-                                <Store size={20} />
-                                <div className="flex flex-col">
-                                    <span className="text-[10px] text-orange-400 leading-none mb-1">Espace</span>
-                                    <span className="text-sm font-bold leading-none">Seller</span>
-                                </div>
-                              </Link>
-                            )}
-
-                            {/* Lien Admin Panel (visible seulement pour les superAdmins) */}
-                            {user?.role === 'superAdmin' && (
-                              <Link to="/admin/dashboard" className="hidden lg:flex items-center gap-2 px-2 py-1.5 rounded-lg text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-500/10 transition-colors">
-                                <Shield size={20} />
-                                <div className="flex flex-col">
-                                    <span className="text-[10px] text-blue-500 dark:text-blue-400 leading-none mb-1">Panneau</span>
-                                    <span className="text-sm font-bold leading-none">Admin</span>
-                                </div>
-                              </Link>
-                            )}
 
                             <Link to="/profile/orders" className="hidden lg:flex items-center gap-2 px-2 py-1.5 rounded-lg text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
                                 <Package size={21} />
@@ -283,8 +266,15 @@ function Navbar() {
                         <Link to="/profile/orders" onClick={closeMenu} className="flex items-center justify-between px-5 py-3.5 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-primary border-b border-gray-100 dark:border-gray-800">
                             <span className="font-medium">{t('my_orders')}</span><ChevronRight size={18} className="text-gray-400" />
                         </Link>
-                        <Link to="/profile" onClick={closeMenu} className="flex items-center justify-between px-5 py-3.5 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-primary border-b border-gray-100 dark:border-gray-800">
-                            <span className="font-medium">{t('my_account')}</span><ChevronRight size={18} className="text-gray-400" />
+                        <Link 
+                            to={!user ? "/login" : user.role === 'superAdmin' ? "/admin/dashboard" : user.role === 'seller' ? "/seller/dashboard" : "/profile"} 
+                            onClick={closeMenu} 
+                            className="flex items-center justify-between px-5 py-3.5 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-primary border-b border-gray-100 dark:border-gray-800"
+                        >
+                            <span className="font-medium">
+                                {!user ? t('account') : user.role === 'superAdmin' ? "Panneau Admin" : user.role === 'seller' ? "Espace Seller" : t('my_account')}
+                            </span>
+                            <ChevronRight size={18} className="text-gray-400" />
                         </Link>
                         <Link to="/cart" onClick={handleCartClick} className="flex items-center justify-between px-5 py-3.5 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-primary border-b border-gray-100 dark:border-gray-800">
                             <span className="font-medium">{t('my_cart')}</span>
