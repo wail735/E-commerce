@@ -138,6 +138,7 @@ function AppRoutes() {
                 <Route path="shipping" element={<SellerShippingPage />} />
                 <Route path="support" element={<SupportPage />} />
                 <Route path="wallet" element={<MyWallet />} />
+                <Route path="subscription" element={<MySubscription />} />
                 <Route path="settings" element={<SellerPlaceholderPage title="seller_settings" />} />
             </Route>
 

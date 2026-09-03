@@ -24,8 +24,8 @@ export default function SellerCenterLayout() {
     { label: t('my_disputes') || 'Litiges', path: '/seller/disputes', icon: Scale },
     { label: 'Support Client', path: '/seller/support', icon: Headphones },
     { label: 'Livraison', path: '/seller/shipping', icon: Truck },
-    { label: 'Mon Portefeuille', path: '/profile/wallet', icon: Coins },
-    { label: 'Abonnement', path: '/profile/subscription', icon: Crown },
+    { label: 'Mon Portefeuille', path: '/seller/wallet', icon: Coins },
+    { label: 'Abonnement', path: '/seller/subscription', icon: Crown },
     { label: t('seller_settings'), path: '/seller/settings', icon: Settings },
   ];
 
