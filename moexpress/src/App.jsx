@@ -3,6 +3,8 @@ import { BrowserRouter as Router } from "react-router-dom";
 import AppRoutes from "./routes/AppRoutes";
 import Loader from "./components/Loader";
 
+import { Toaster } from 'react-hot-toast';
+
 function App() {
   const [loading, setLoading] = useState(true);
 
@@ -12,6 +14,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-[#0B1120] text-gray-900 dark:text-white transition-colors duration-300 relative overflow-x-hidden">
+      <Toaster position="top-right" />
       {loading && <Loader onComplete={handleLoaderComplete} />}
       
       {/* Animation d'apparition de la page (Fade-in + Slide-up) */}
