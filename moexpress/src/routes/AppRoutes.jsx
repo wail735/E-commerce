@@ -107,7 +107,7 @@ function AppRoutes() {
                 <Route path="disputes" element={<MyDisputes />} />
                 <Route path="dashboard" element={<DashboardPlaceholder title="Dashboard" />} />
                 <Route path="messages" element={<Messenger />} />
-                <Route path="wishlist" element={<DashboardPlaceholder title="Wishlist" />} />
+                <Route path="wishlist" element={<Wishlist />} />
                 <Route path="addresses" element={<DashboardPlaceholder title="Addresses" />} />
                 <Route path="payments" element={<DashboardPlaceholder title="Payment Methods" />} />
                 <Route path="support" element={<SupportPage />} />
