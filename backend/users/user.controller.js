@@ -204,7 +204,7 @@ export const sendSellerOtp = async (req, res) => {
 
     await User.findByIdAndUpdate(req.user._id, { otp, otpExpires });
 
-    if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+    if (process.env.BREVO_API_KEY) {
       try {
         await sendEmail({
           email: req.user.email,
@@ -221,15 +221,15 @@ export const sendSellerOtp = async (req, res) => {
             </div>
           `,
         });
-        return res.status(200).json({ success: true, message: "Code envoyé à votre email." });
+        return res.status(200).json({ success: true, message: "Code envoyé à votre email via Brevo." });
       } catch (emailError) {
-        console.error("[SMTP ERROR] Render bloque probablement le port SMTP:", emailError.message);
+        console.error("[BREVO ERROR] Erreur lors de l'envoi de l'email:", emailError.message);
         // Fallback: Retourne le devOtp pour que le frontend s'auto-remplisse
-        return res.status(200).json({ success: true, message: "Email bloqué par le serveur. Remplissage automatique activé.", devOtp: otp });
+        return res.status(200).json({ success: true, message: "Erreur Brevo. Remplissage automatique activé.", devOtp: otp });
       }
     } else {
-      console.log(`[WARNING] EMAIL NON CONFIGURE. OTP pour ${req.user.email} : ${otp}`);
-      return res.status(200).json({ success: true, message: "Email non configuré. Mode dev actif.", devOtp: otp });
+      console.log(`[WARNING] BREVO NON CONFIGURE. OTP pour ${req.user.email} : ${otp}`);
+      return res.status(200).json({ success: true, message: "Brevo non configuré. Mode dev actif.", devOtp: otp });
     }
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
