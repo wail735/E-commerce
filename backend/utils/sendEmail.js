@@ -1,4 +1,8 @@
 import nodemailer from 'nodemailer';
+import dns from 'dns';
+
+// Fix for Render/Node.js IPv6 ENETUNREACH error with smtp.gmail.com
+dns.setDefaultResultOrder('ipv4first');
 
 const sendEmail = async (options) => {
   // Verify credentials exist to avoid unnecessary hanging
@@ -9,7 +13,9 @@ const sendEmail = async (options) => {
 
   // 1. Créer le "transporter" (le service d'envoi d'email, ici Gmail)
   const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
     auth: {
       user: process.env.EMAIL_USER, // Votre adresse Gmail
       pass: process.env.EMAIL_PASS, // Le mot de passe d'application généré
