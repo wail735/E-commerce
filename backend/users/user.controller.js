@@ -223,9 +223,14 @@ export const sendSellerOtp = async (req, res) => {
         });
         return res.status(200).json({ success: true, message: "Code envoyé à votre email via Brevo." });
       } catch (emailError) {
-        console.error("[BREVO ERROR] Erreur lors de l'envoi de l'email:", emailError.message);
+        const brevoErrorDetails = emailError.response?.data?.message || emailError.message;
+        console.error("[BREVO ERROR] Détails:", brevoErrorDetails);
         // Fallback: Retourne le devOtp pour que le frontend s'auto-remplisse
-        return res.status(200).json({ success: true, message: "Erreur Brevo. Remplissage automatique activé.", devOtp: otp });
+        return res.status(200).json({ 
+          success: true, 
+          message: `Brevo API Error: ${brevoErrorDetails}`, 
+          devOtp: otp 
+        });
       }
     } else {
       console.log(`[WARNING] BREVO NON CONFIGURE. OTP pour ${req.user.email} : ${otp}`);

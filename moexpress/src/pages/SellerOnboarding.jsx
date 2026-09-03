@@ -79,7 +79,7 @@ export default function SellerOnboarding() {
       
       // Afficher un message de succès (ou d'avertissement si mode dev/fallback)
       if (res.data?.devOtp) {
-        toast.error("L'email n'a pas pu être envoyé (Vérifiez la clé API Brevo sur Render). Code de secours généré dans la console.");
+        toast.error(res.data.message || "Erreur lors de l'envoi de l'email.");
         console.log("🛠️ [MODE DEV] Code OTP de secours :", res.data.devOtp);
       } else {
         toast.success(res.data?.message || "Code envoyé avec succès !");
