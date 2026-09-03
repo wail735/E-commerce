@@ -98,6 +98,9 @@ const ProductDetails = () => {
     );
   }
 
+  const creatorId = typeof product.createdBy === 'object' ? product.createdBy?._id : product.createdBy;
+  const isOwnProduct = user && creatorId && (user._id === creatorId || user.id === creatorId);
+
   const getGalleryImages = (prod) => {
     if (prod.images && prod.images.length > 0) {
       return prod.images.map(img => img.url);
@@ -331,12 +334,12 @@ const ProductDetails = () => {
             <div className="mb-8">
               <span className="block text-[14px] font-bold text-gray-900 dark:text-white mb-3">{t('quantity')}:</span>
               <div className="flex items-center gap-4">
-                <div className="flex items-center border border-gray-200 dark:border-gray-700 rounded-md h-10 w-28 bg-white dark:bg-gray-800">
-                  <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-10 h-full flex items-center justify-center text-gray-500 hover:text-black dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                <div className={`flex items-center border border-gray-200 dark:border-gray-700 rounded-md h-10 w-28 bg-white dark:bg-gray-800 ${isOwnProduct ? 'opacity-50' : ''}`}>
+                  <button disabled={isOwnProduct} onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-10 h-full flex items-center justify-center text-gray-500 hover:text-black dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:cursor-not-allowed disabled:hover:bg-transparent">
                     <Minus size={16} strokeWidth={2} />
                   </button>
                   <span className="flex-1 text-center text-[14px] font-semibold text-gray-900 dark:text-white border-x border-gray-200 dark:border-gray-700 h-full flex items-center justify-center">{quantity}</span>
-                  <button onClick={() => setQuantity(quantity + 1)} className="w-10 h-full flex items-center justify-center text-gray-500 hover:text-black dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                  <button disabled={isOwnProduct} onClick={() => setQuantity(quantity + 1)} className="w-10 h-full flex items-center justify-center text-gray-500 hover:text-black dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:cursor-not-allowed disabled:hover:bg-transparent">
                     <Plus size={16} strokeWidth={2} />
                   </button>
                 </div>
@@ -346,19 +349,30 @@ const ProductDetails = () => {
 
             {/* BOUTONS D'ACTION */}
             <div className="flex flex-col gap-3 mb-6">
-              <button 
-                onClick={handleAddToCart}
-                className="w-full h-12 bg-[#FF4D20] text-white rounded-lg font-bold text-[15px] hover:bg-orange-600 transition-colors shadow-sm"
-              >
-                {t('add_to_cart')}
-              </button>
-              
-              <button 
-                onClick={handleBuyNow}
-                className="w-full h-12 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg font-bold text-[15px] hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-              >
-                {t('buy_now')}
-              </button>
+              {isOwnProduct ? (
+                <button 
+                  disabled
+                  className="w-full h-12 bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 rounded-lg font-bold text-[15px] cursor-not-allowed border border-gray-200 dark:border-gray-700"
+                >
+                  C'est votre produit
+                </button>
+              ) : (
+                <>
+                  <button 
+                    onClick={handleAddToCart}
+                    className="w-full h-12 bg-[#FF4D20] text-white rounded-lg font-bold text-[15px] hover:bg-orange-600 transition-colors shadow-sm"
+                  >
+                    {t('add_to_cart')}
+                  </button>
+                  
+                  <button 
+                    onClick={handleBuyNow}
+                    className="w-full h-12 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg font-bold text-[15px] hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    {t('buy_now')}
+                  </button>
+                </>
+              )}
             </div>
             
             {/* WISHLIST & SHARE */}
