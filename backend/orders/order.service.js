@@ -144,7 +144,10 @@ export const getSellerOrders = async (sellerId) => {
  * Mettre à jour le statut d'une commande (par le Vendeur).
  */
 export const updateOrderStatus = async (orderId, sellerId, status, trackingNumber) => {
-  const order = await Order.findOne({ _id: orderId, seller: sellerId });
+  const query = { _id: orderId };
+  if (sellerId) query.seller = sellerId;
+
+  const order = await Order.findOne(query);
   if (!order) throw new Error("Commande non trouvée ou non autorisée.");
 
   const validStatuses = ["pending", "processing", "shipped", "delivered", "cancelled", "disputed"];
@@ -152,7 +155,7 @@ export const updateOrderStatus = async (orderId, sellerId, status, trackingNumbe
     throw new Error("Statut invalide.");
   }
 
-  order.orderStatus = status;
+  order.status = status;
   if (trackingNumber) order.trackingNumber = trackingNumber;
 
   if (status === "delivered") order.deliveredAt = new Date();
