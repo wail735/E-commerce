@@ -71,6 +71,13 @@ function Home() {
       const currentDate = new Date();
       const endDate = new Date("2026-08-21T23:59:59");
       const diff = endDate - currentDate;
+      
+      if (diff <= 0) {
+        setTimer(null); // Timer is over
+        clearInterval(interval);
+        return;
+      }
+
       const days = Math.floor(diff / (1000 * 60 * 60 * 24));
       const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
       const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
@@ -98,9 +105,10 @@ function Home() {
   }, []);
 
   // Slices
-  const flashDeals = products.slice(0, 6);
-  // If we have few products, show them in both sections so it doesn't look empty
-  const topProducts = products.length > 6 ? products.slice(6) : products;
+  const isPromoActive = new Date() < new Date("2026-08-21T23:59:59");
+  const flashDeals = isPromoActive ? products.slice(0, 6) : [];
+  // If promo is active and we have many products, skip first 6 for top products, else show all
+  const topProducts = (isPromoActive && products.length > 6) ? products.slice(6) : products;
 
   return (
     <div className="min-h-screen bg-gray-50/50 dark:bg-[#0B1120] pt-0 pb-20 transition-colors duration-300">
@@ -263,32 +271,37 @@ function Home() {
           </div>
         )}
 
-        <div className="mb-6 flex items-center justify-between border-b border-gray-200/60 dark:border-gray-700 pb-4">
-          <div className="flex items-center gap-4">
-            <h2 className="text-[20px] font-bold text-gray-900 dark:text-white font-display flex items-center gap-2">
-              {t('flash_deals')} <span className="text-yellow-400">⚡</span>
-            </h2>
-            <div className="hidden sm:flex items-center text-sm">
-              <span className="text-gray-400 dark:text-gray-500 mr-1.5">{t('ends_in')}</span>
-              <span className="text-[#FF4D20] font-mono font-medium tracking-wide">{timer}</span>
+        {/* Flash Deals Section - Only shown if timer is active */}
+        {timer && (
+          <div className="mb-6 flex items-center justify-between border-b border-gray-200/60 dark:border-gray-700 pb-4">
+            <div className="flex items-center gap-4">
+              <h2 className="text-[20px] font-bold text-gray-900 dark:text-white font-display flex items-center gap-2">
+                {t('flash_deals')} <span className="text-yellow-400">⚡</span>
+              </h2>
+              <div className="hidden sm:flex items-center text-sm">
+                <span className="text-gray-400 dark:text-gray-500 mr-1.5">{t('ends_in')}</span>
+                <span className="text-[#FF4D20] font-mono font-medium tracking-wide">{timer}</span>
+              </div>
             </div>
+            <a href="/flash-deals" className="text-sm font-medium text-[#FF4D20] hover:underline">
+              {t('view_all')}
+            </a>
           </div>
-          <a href="/flash-deals" className="text-sm font-medium text-[#FF4D20] hover:underline">
-            {t('view_all')}
-          </a>
-        </div>
+        )}
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6">
-          {loading ? (
-            [...Array(6)].map((_, index) => (
-              <ProductSkeleton key={index} />
-            ))
-          ) : (
-            flashDeals.map((product) => (
-              <ProductCard key={product._id || product.id} product={product} />
-            ))
-          )}
-        </div>
+        {timer && (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6">
+            {loading ? (
+              [...Array(6)].map((_, index) => (
+                <ProductSkeleton key={index} />
+              ))
+            ) : (
+              flashDeals.map((product) => (
+                <ProductCard key={`flash-${product._id || product.id}`} product={product} />
+              ))
+            )}
+          </div>
+        )}
 
 
         {/* JUST FOR YOU SECTION (Global E-commerce Standard) */}

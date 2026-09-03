@@ -19,12 +19,19 @@ const ProductCard = ({ product }) => {
     const isOwnProduct = user && creatorId && (user._id === creatorId || user.id === creatorId);
     const storeName = product.createdBy?.storeName || product.createdBy?.name;
 
-    // Calcul du % de remise — uniquement si le prix barré est SUPÉRIEUR au prix actuel
+    // Global Flash Deal logic
+    const promoEndDate = new Date("2026-08-21T23:59:59");
+    const isPromoActive = new Date() < promoEndDate;
+
+    // Calcul du % de remise — uniquement si le prix barré est SUPÉRIEUR au prix actuel et que la promo est active
     const comparePrice = product.comparePrice || product.originalPrice || 0;
-    const hasPromo = comparePrice > product.price;
+    const hasPromo = isPromoActive && comparePrice > product.price;
     const discountPercent = hasPromo
         ? Math.round(((comparePrice - product.price) / comparePrice) * 100)
-        : (product.discount || 0);
+        : 0;
+
+    // Le vrai prix à afficher et utiliser
+    const displayPrice = hasPromo ? product.price : (comparePrice > 0 ? comparePrice : product.price);
 
 
     return (
@@ -78,7 +85,7 @@ const ProductCard = ({ product }) => {
                 </div>
 
                 <div className="flex items-center gap-2 mb-3">
-                    <span className="text-[18px] font-black text-gray-900 dark:text-white">${(product.price || 0).toFixed(2)}</span>
+                    <span className="text-[18px] font-black text-gray-900 dark:text-white">${displayPrice.toFixed(2)}</span>
                     {hasPromo && (
                         <span className="text-[13px] text-gray-400 dark:text-gray-500 line-through">${comparePrice.toFixed(2)}</span>
                     )}
