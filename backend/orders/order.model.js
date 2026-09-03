@@ -13,6 +13,11 @@ const orderSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    // Vendeur concerné par cette commande (chaque commande est spécifique à un vendeur)
+    seller: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
     // Liste des articles commandés avec le vendeur associé
     items: [
       {
